@@ -1,0 +1,63 @@
+#include <DHT.h>
+#include <Adafruit_SSD1306.h>
+#include <OakOLED.h>
+
+const int trigger = D5;
+const int echo = D6;
+
+long duration = 0;
+float cm = 0;
+float inch = 0;
+
+OakOLED oled;
+
+void setup() {
+  Serial.begin(9600);
+
+  oled.begin();
+  oled.clearDisplay();
+  oled.setTextSize(2);
+  oled.setTextColor(1);
+  oled.setCursor(0, 0);
+  oled.println("Initializing...");
+  oled.display();
+  delay(2000);  
+
+  
+  pinMode(trigger, OUTPUT);
+  pinMode(echo, INPUT);
+}
+
+void loop() {
+  digitalWrite(trigger, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigger, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigger, LOW);
+
+  duration = pulseIn(echo, HIGH);
+
+  cm = duration * 0.034 / 2;   
+  inch = duration * 0.0133 / 2; // Conversion factor for inches
+
+  Serial.print("Distance: ");
+  Serial.print(cm);
+  Serial.print(" cm, ");
+  Serial.print(inch);
+  Serial.println(" inches");
+
+  oled.clearDisplay();
+  oled.setTextSize(1);
+  oled.setCursor(0, 0);
+  oled.println("Distance:");
+  oled.setTextSize(2);
+  oled.setCursor(0, 20);
+  oled.print(cm);
+  oled.println(" cm");
+  oled.setCursor(0, 40);
+  oled.print(inch);
+  oled.println(" in");
+  oled.display();
+
+  delay(1000);
+}
